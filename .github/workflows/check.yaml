@@ -1,0 +1,34 @@
+# Run checks.
+name: check
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Cancel superseded PR runs. Let every main commit finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      # The pre-commit stage over every file, so a commit made with --no-verify
+      # still answers here.
+      - name: run hooks
+        run: prek run --all-files --show-diff-on-failure
+
+      # The pre-push stage.
+      - name: run checks
+        run: mise run check

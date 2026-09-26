@@ -1,0 +1,3 @@
+{
+  "extends": ["github>shippedsoftware/renovate-config"]
+}
