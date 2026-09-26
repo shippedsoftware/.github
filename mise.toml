@@ -1,0 +1,50 @@
+[min_version]
+# Oldest mise that reads this lockfile's v1 format and resolves its
+# artifacts.
+# https://github.com/jdx/mise/releases/tag/v2026.8.11
+hard = "2026.8.11"
+soft = "2026.9.4"
+
+[tools]
+actionlint = "1.7.12"
+prek = "0.5.3"
+"github:eljpsm/passdown" = "0.1.0"
+
+[tool_config]
+locked = true
+
+[settings]
+lockfile = true
+# Keep global mise tools out of this project's locked install.
+enable_tools = ["actionlint", "prek", "github:eljpsm/passdown"]
+
+# Tasks run with the pinned tools on PATH, so no `mise exec` prefix is needed.
+#
+# mise is the entry point for anything that spans tools. package.json scripts
+# own the JavaScript side and are the only callers of prettier and wrangler.
+[tasks.setup]
+description = "Install dependencies and git hooks"
+run = ["bun install", "prek install"]
+
+# `check` is what CI and the pre-push hook run.
+[tasks.check]
+description = "Check the repository"
+depends = ["*:check"]
+
+[tasks.fix]
+description = "Fix what the checks can fix"
+# Fixers run one at a time. Two of them rewriting the tree at once can collide.
+run = [{ task = "markdown:fix" }]
+
+[tasks."markdown:check"]
+description = "Check Markdown formatting"
+run = "passdown check ."
+
+[tasks."markdown:fix"]
+description = "Format Markdown"
+run = "passdown fix ."
+
+[tasks."workflows:check"]
+description = "Check GitHub workflows"
+dir = "{{config_root}}"
+run = "actionlint"

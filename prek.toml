@@ -1,0 +1,28 @@
+#:schema https://www.schemastore.org/prek.json
+
+default_install_hook_types = ["pre-commit", "pre-push"]
+
+# Generated file. A hook that rewrites it fights the generator.
+exclude = '^mise\.lock$'
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "trailing-whitespace" },
+  { id = "end-of-file-fixer" },
+  { id = "check-yaml" },
+  { id = "check-merge-conflict" },
+  { id = "detect-private-key" },
+]
+
+[[repos]]
+repo = "local"
+
+# Repository checks run on push.
+[[repos.hooks]]
+id = "check"
+name = "mise run check"
+language = "system"
+entry = "mise run check"
+pass_filenames = false
+stages = ["pre-push"]
