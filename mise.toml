@@ -19,12 +19,9 @@ lockfile = true
 enable_tools = ["actionlint", "prek", "github:eljpsm/passdown"]
 
 # Tasks run with the pinned tools on PATH, so no `mise exec` prefix is needed.
-#
-# mise is the entry point for anything that spans tools. package.json scripts
-# own the JavaScript side and are the only callers of prettier and wrangler.
 [tasks.setup]
 description = "Install dependencies and git hooks"
-run = ["bun install", "prek install"]
+run = ["prek install"]
 
 # `check` is what CI and the pre-push hook run.
 [tasks.check]
